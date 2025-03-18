@@ -9,57 +9,45 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class CategoryReportController extends Controller
 {
-    public function index(Request $request)
+
+public function index(Request $request)
 {
-    $query = Category::query();
-
-    if ($request->has('type')) {
-        $query->where('type', $request->type);
-    }
-
-    // Date Filter Apply
-    if ($request->has('start_date') && $request->has('end_date')) {
-        $query->whereBetween('created_at', [$request->start_date, $request->end_date]);
-    }
-
-    $categories = $query->get();
+    $categories = Category::withCount('posts') // Count posts in each category
+                    ->orderByDesc('posts_count') // Sort by highest post count
+                    ->get();
 
     return view('backend.admin.categories.category_report', compact('categories'));
 }
 
 
-    public function exportPDF(Request $request)
-    {
-        $query = Category::query();
 
-
-        if ($request->has('type')) {
-            $query->where('type', $request->type);
-        }
-
-        $categories = $query->get(); // Filtered categories
-
-        $pdf = PDF::loadView('backend.admin.categories.category_pdf', compact('categories'));
-
-        return $pdf->download('categories_report.pdf');
-    }
-
-    // public function topViewedPostsReport()
+    // public function exportPDF(Request $request)
     // {
-    //     $categories = Category::with(['posts' => function($query) {
-    //         $query->withCount('visitors')->orderByDesc('visitors_count');
-    //     }])->get();
+    //     $query = Category::query();
 
-    //     return view('backend.admin.categories.top_viewed_posts', compact('categories'));
+
+    //     if ($request->has('type')) {
+    //         $query->where('type', $request->type);
+    //     }
+
+    //     $categories = $query->get(); // Filtered categories
+
+    //     $pdf = PDF::loadView('backend.admin.categories.category_pdf', compact('categories'));
+
+    //     return $pdf->download('categories_report.pdf');
     // }
-//     public function topViewedPostsReport()
-// {
-//     $categories = Category::with(['posts' => function($query) {
-//         $query->orderByDesc('visitor_count'); // Visitor count column ke mutabiq sorting
-//     }])->get();
+    public function exportPDF(Request $request)
+{
+    $categories = Category::withCount('posts') // Count posts in each category
+                    ->orderByDesc('posts_count') // Sort by highest post count
+                    ->get();
 
-//     return view('backend.admin.categories.top_viewed_posts', compact('categories'));
-// }
+    $pdf = PDF::loadView('backend.admin.categories.category_pdf', compact('categories'));
+
+    return $pdf->download('categories_report.pdf');
+}
+
+
 public function topViewedPostsReport()
 {
     $categories = Category::with(['posts' => function($query) {

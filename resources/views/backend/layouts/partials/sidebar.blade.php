@@ -144,6 +144,13 @@
                         Categories Report
                     </a>
                 </nav>
+                <div class="collapse" id="collapseReports" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                    <nav class="sb-sidenav-menu-nested nav">
+                        <a class="nav-link" href="{{ url('admin/categories/top-viewed-posts') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
+                            Top View Report
+                        </a>
+                    </nav>
             </div>
 
 
