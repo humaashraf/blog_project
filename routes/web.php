@@ -149,7 +149,7 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::get('/posts-report/export-pdf', [PostReportController::class, 'exportPDF'])->name('backend.admin.posts.export.pdf');
 
     Route::get('/categories/category-report', [CategoryReportController::class, 'index'])->name('backend.admin.categories.report');
-    // Route::get('/categories-report/export-pdf', [CategoryReportController::class, 'exportPDF'])->name('backend.admin.categories.export.pdf');
+
     Route::get('/admin/categories/export-pdf', [CategoryReportController::class, 'exportPDF'])->name('backend.admin.categories.export_pdf');
 
     Route::get('/categories/top-viewed-posts', [CategoryReportController::class, 'topViewedPostsReport'])
