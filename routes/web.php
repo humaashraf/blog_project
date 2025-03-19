@@ -74,7 +74,6 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::post('posts/store', [AdminPostController::class, 'store'])->name('backend.admin.posts.store');
     Route::get('posts/{id}/edit', [AdminPostController::class, 'edit'])->name('backend.admin.posts.edit');
     Route::delete('posts/delete/{id}', [AdminPostController::class, 'delete'])->name('backend.admin.posts.delete');
-    // Route::get('post/{id}', [AdminPostController::class, 'show_admin'])->name('backend.admin.post.show_admin');
     Route::get('post/{slug}/{id}', [AdminPostController::class, 'show'])->name('backend.admin.post.show');
 
 
@@ -82,13 +81,11 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::post('pending-posts/store', [PendingPostController::class, 'store'])->name('backend.admin.pendingposts.store');
     Route::get('pending-posts/{id}/edit', [PendingPostController::class, 'edit'])->name('backend.admin.pendingposts.edit');
     Route::delete('pendingposts/delete/{id}', [PendingPostController::class, 'delete'])->name('backend.admin.pendingposts.delete');
-    // Route::post('/pending-posts/approve/{id}', [PendingPostController::class, 'approve'])->name('backend.admin.pendingposts.approve');
 
     Route::post('pending-posts/approve/{id}', [PendingPostController::class, 'approve'])->name('backend.admin.pendingposts.approve');
     Route::get('/pending-posts/count', [AuthorPostsController::class, 'pendingPostsCount']);
 
 
-    // Route::post('/pending-posts/deny/{id}', [PendingPostController::class, 'denyPost'])->name('backend.admin.pendingposts.deny');
     Route::post('pendingposts/deny/{id}', [PendingPostController::class, 'denyPost'])->name('backend.admin.pendingposts.deny');
 
 
