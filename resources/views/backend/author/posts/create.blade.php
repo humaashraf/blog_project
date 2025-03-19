@@ -1,21 +1,4 @@
-{{-- <!doctype html>
-<html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" />
-    <link href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css" rel="stylesheet">
-    <title>Create Posts</title>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
-
-<body>
-     --}}
     @extends('backend.layouts.admin')
 
     @section('title', 'Posts')
@@ -55,10 +38,7 @@
             </div>
         </div>
     </div>
-    {{-- <h1 class="mt-4">Posts</h1>
-<ol class="breadcrumb">
-    <li class="breadcrumb-item active">Posts</li>
-</ol> --}}
+
     <div class="modal fade ajax-modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <form id="ajaxForm" accept="">
@@ -162,10 +142,7 @@
                         data: 'title',
                         name: 'title'
                     },
-                    // {
-                    //     data: 'description',
-                    //     name: 'description'
-                    // },
+
                     {
                         data: 'description',
                         name: 'description',
@@ -368,6 +345,3 @@
 
     @endsection
 
-{{-- </body>
-
-</html> --}}
