@@ -135,31 +135,6 @@
 </div>
 
 
-
-
-    {{-- <div class="row">
-        <div class="col-md-6 offset-3" style="margin-top: 100px;">
-            <a class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal" id="add_post">Add new
-                Post</a>
-            <table id="post-table" class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Title</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Image</th>
-                        <th scope="col">Category</th>
-                        <th scope="col">Approval Status</th>
-                        <th scope="col">Tags</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div> --}}
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
@@ -243,47 +218,6 @@
                 }
             });
         });
-//         $(document).on('click', '.viewReasonButton', function() {
-//     let postId = $(this).data('id');
-
-//     $.ajax({
-//         url: '/author/posts/get-reason',
-//         type: 'GET',
-//         data: { post_id: postId },
-//         success: function(response) {
-//             $('#reasonText').text(response.reason);
-//             $('#viewReasonModal').modal('show'); // Open modal
-//         },
-//         error: function(xhr) {
-//             $('#reasonText').text('Reason not found!');
-//             $('#viewReasonModal').modal('show');
-//         }
-//     });
-// });
-
-
-    // $('.viewReasonButton').click(function () {
-    //     var postId = $(this).data('id');
-
-    //     $.ajax({
-    //         url: "/posts/reason/" + postId,
-    //         type: "GET",
-    //         success: function (response) {
-    //             if (response.reason) {
-    //                 $('#reasonText').text(response.reason);
-    //                 $('#reasonModal').modal('show');
-    //             } else {
-    //                 alert("No reason found.");
-    //             }
-    //         },
-    //         error: function () {
-    //             alert("Failed to fetch reason.");
-    //         }
-    //     });
-    // });
-
-
-
 
 
             // Save data
@@ -314,12 +248,7 @@
                         });
                         table.ajax.reload();
                     },
-                    // error: function(error) {
-                    //     var response = JSON.parse(error.responseText);
-                    //     $('#titleError').html(response.errors?.title || '');
-                    //     $('#descriptionError').html(response.errors?.description || '');
-                    //     $('#imageError').html(response.errors?.image || '');
-                    // }
+
                     error: function(error) {
                         if (error.status == 422) {
                             var response = JSON.parse(error.responseText);
@@ -425,10 +354,7 @@
                 $('#modal-title').html('Create Post');
                 $('#saveBtn').html('Save Post');
             });
-            // $(document).on('click', '.viewButton', function () {
-            //     var postId = $(this).data('id');
-            //     window.location.href = "/author/post/" + postId; // Backend route ka URL
-            // });
+
             $(document).on('click', '.viewButton', function () {
     var slug = $(this).data('slug');
     var postId = $(this).data('id');
