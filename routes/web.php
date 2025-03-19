@@ -51,9 +51,6 @@ use App\Http\Controllers\Backend\Admin\CategoryReportController;
 
 
 
-// Route::get('/index', [HomeController::class, 'index']);
-
-
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->middleware('guest')->name('login');
 
@@ -87,11 +84,6 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
 
 
     Route::post('pendingposts/deny/{id}', [PendingPostController::class, 'denyPost'])->name('backend.admin.pendingposts.deny');
-
-
-
-    // Route::post('/pending-posts/{id}/deny', [PostReasonController::class, 'store']);
-
 
     Route::get('tags', [TagController::class, 'index'])->name('backend.admin.tags.index');
     Route::post('tags/store', [TagController::class, 'store'])->name('backend.admin.tags.store');
@@ -166,33 +158,19 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
 
         Route::get('/dashboard', [AuthorController::class, 'index'])->name('dashboard');
         Route::get('posts', [AuthorPostsController::class, 'index'])->name('backend.author.posts.index');
+
         Route::post('posts/store', [AuthorPostsController::class, 'store'])->name('backend.author.posts.store');
         Route::get('posts/{id}/edit', [AuthorPostsController::class, 'edit'])->name('backend.author.posts.edit');
         Route::delete('posts/delete/{id}', [AuthorPostsController::class, 'delete'])->name('backend.author.posts.delete');
-        // Route::get('/posts/get-reason', [AuthorPostsController::class, 'getReason'])->name('posts.getReason');
-        // Route::get('/admin/pending-posts/count', [AuthorPostsController::class, 'pendingPostsCount']);
-        // Route::get('post/{id}', [AuthorPostsController::class, 'show'])->name('backend.author.post.show');
+
         Route::get('post/{slug}/{id}', [AuthorPostsController::class, 'show'])->name('backend.author.post.show');
 
-
-        // Route::get('/author/posts/get-reason', [AuthorPostsController::class, 'getReason'])->name('posts.getReason');
-        // Route::get('/author/posts/get-reason', [AuthorPostsController::class, 'getReason'])->name('posts.getReason');
         Route::get('posts/getReason', [AuthorPostsController::class, 'getReason'])->name('backend.author.posts.getReason');
 
-
-
-
-        // Route::get('/posts/reason/{id}', [AuthorPostsController::class, 'getPostReason']);
-
-
-
-
-    //     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])
-    // ->name('notifications.markAsRead');
-    Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])
-    ->name('notifications.markAsRead');
-    Route::post('/posts/{postId}/reject', [PendingPostController::class, 'rejectPost'])->name('posts.reject');
-    Route::get('/posts/{post}/edit', [PendingPostController::class, 'show'])->name('posts.show');
+        Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.markAsRead');
+        Route::post('/posts/{postId}/reject', [PendingPostController::class, 'rejectPost'])->name('posts.reject');
+        Route::get('/posts/{post}/edit', [PendingPostController::class, 'show'])->name('posts.show');
 
 
 
@@ -218,20 +196,12 @@ Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name
 
 Auth::routes();
 
-// Route::get('/home', [HomeController::class, 'home'])->name('frontend.home');
 Route::get('/contact', [HomeController::class, 'contact'])->name('frontend.contact')->middleware('log.visitor');
 Route::get('/about', [HomeController::class, 'about'])->name('frontend.about')->middleware('log.visitor');
 Route::get('/blog', [HomeController::class, 'blog'])->name(name: 'frontend.blog')->middleware('log.visitor');
-// Route::get('/post_detail', [HomeController::class, 'post_detail'])->name(name: 'frontend.post_detail');
-// Route::get('/post_detail/{id}', [HomeController::class, 'post_detail'])->name('frontend.post_detail');
-
-
-
 
 Route::get('/', [HomeController::class, 'home'])->middleware('log.visitor');
 
-
-// Route::get('/', [HomeController::class, 'contactSliders'])->name('home');
 
 Route::post('/subscribe-newsletter', [HomeController::class, 'subscribeNewsletter'])->name('subscribe.newsletter');
 Route::post('/contact-submit', [HomeController::class, 'submitContactForm'])->name('contact.submit');
@@ -244,7 +214,7 @@ Route::get('/post', [HomeController::class, 'showFourthLastPost'])->name('home')
 Route::get('/post/{slug}/{id}', [HomeController::class, 'show'])->name(name: 'post.show')->middleware('log.visitor');
 
 Route::get('/tags/{slug}/posts', [TagController::class, 'showPosts'])->name('tag.posts')->middleware('log.visitor');
-// Route::get('/blog/{id}', [HomeController::class, 'show'])->name('blog.show');
+
 Route::get('/blog/{slug}/{id}', [HomeController::class, 'show'])->name('blog.show');
 
 
