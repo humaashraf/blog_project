@@ -25,28 +25,82 @@
 
 <body class="sb-nav-fixed">
 
-    {{-- @include('backend.layouts.partials.navbar') --}}
 
-    @if(auth()->user()->role_id == '1')
-        @include('backend.layouts.partials.navbar') {{-- Admin Navbar --}}
-    @elseif(auth()->user()->role_id == '2')
-        @include('backend.layouts.partials.navbar_author') {{-- Author Navbar --}}
-    @endif
+    {{-- @if(auth()->user()->hasRole('admin'))
+    @include('backend.layouts.partials.navbar')
+@elseif(auth()->user()->hasRole('author'))
+    @include('backend.layouts.partials.navbar_author')
+@endif --}}
+@if(auth()->user()->type === 'admin')
+    @include('backend.layouts.partials.navbar') {{-- Admin Navbar --}}
+@elseif(auth()->user()->type === 'author')
+    @include('backend.layouts.partials.navbar_author') {{-- Author Navbar --}}
+@endif
+
+
 
 
     <div id="layoutSidenav">
 
-        {{-- <div id="layoutSidenav_nav">
-            @include('layouts.partials.sidebar')
-        </div> --}}
-        <div id="layoutSidenav_nav">
-            @if (auth()->user()->role_id == 2)
-                <!-- Example: Author Role -->
-                @include('backend.layouts.partials.sidebar_author') <!-- Author Sidebar -->
-            @else
-                @include('backend.layouts.partials.sidebar') <!-- Default Sidebar -->
+         <div id="layoutSidenav_nav">
+            {{--
+            @if (auth()->check())
+                @if (auth()->user()->hasRole('author'))
+                    @include('backend.layouts.partials.sidebar_author')
+                @else
+                    @include('backend.layouts.partials.sidebar', ['permissions' => auth()->user()->getAllPermissions()])
+                @endif
             @endif
-        </div>
+        </div> --}}
+        {{-- <div id="layoutSidenav_nav">
+            @if (auth()->check())
+                @php
+                    $permissions = auth()->user()->getAllPermissions()->pluck('name')->toArray();
+                @endphp
+
+                @if (!empty($permissions))
+                    @include('backend.layouts.partials.sidebar', ['permissions' => $permissions])
+                @else
+                    @include('backend.layouts.partials.sidebar_author')
+                @endif
+            @endif
+        </div> --}}
+        {{-- <div id="layoutSidenav_nav">
+            @if (auth()->check())
+                @php
+                    $permissions = auth()->user()->getAllPermissions()->pluck('name')->toArray();
+                @endphp
+
+
+                @if (!empty($permissions))
+                    @include('backend.layouts.partials.sidebar', ['permissions' => $permissions])
+                @else
+                    @include('backend.layouts.partials.sidebar_author')
+                @endif
+            @endif
+        </div> --}}
+        @if (auth()->check())
+    @php
+        $user = auth()->user();
+        $roles = $user->roles->pluck('name')->toArray();
+        $permissions = $user->getAllPermissions()->pluck('name')->toArray();
+    @endphp
+
+    {{-- <pre>{{ print_r($roles) }}</pre> --}}
+    {{-- <pre>{{ print_r($permissions) }}</pre> --}}
+
+    @if (!empty($permissions))
+        @include('backend.layouts.partials.sidebar', ['permissions' => $permissions])
+    @else
+        @include('backend.layouts.partials.sidebar_author')
+    @endif
+@endif
+</div>
+
+
+
+
+
 
         <div id="layoutSidenav_content">
             <main>

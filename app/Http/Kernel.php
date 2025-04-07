@@ -67,5 +67,9 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'role' => \App\Http\Middleware\RoleMiddleware::class,
         'log.visitor' => \App\Http\Middleware\LogVisitor::class,
+        'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        'redirect.non.authors' => \App\Http\Middleware\RedirectNonAuthors::class,
+
+
     ];
 }

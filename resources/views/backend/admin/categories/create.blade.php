@@ -11,7 +11,9 @@
                     <div class="row">
                         <div class="col">Categories</div>
                         <div class="col " >
+                            @can('backend.admin.categories.store')
                             <a class="btn btn-info mb-3" data-bs-toggle="modal" style="float: right;" data-bs-target="#exampleModal" id="add_category">Add new Category</a>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -22,10 +24,20 @@
                                 <th scope="col">#</th>
                                 <th scope="col">Name</th>
                                 <th scope="col">Type</th>
-                                <th scope="col">Actions</th>
+                                {{-- <th scope="col">Actions</th> --}}
+                                <th scope="col">
+                                    @canany(['backend.admin.categories.edit', 'backend.admin.categories.delete'])
+                                        Actions
+                                    @endcanany
+                                </th>
+
                             </tr>
                         </thead>
                         <tbody>
+                            {{-- @can('backend.admin.categories.edit')
+                                <a href="{{ route('backend.admin.categories.edit', $row->id) }}" class="btn-sm btn btn-info">Edit</a>
+                            @endcan --}}
+
                         </tbody>
                     </table>
                 </div>
@@ -127,10 +139,29 @@
                         data: 'action',
                         name: 'action',
                         orderable: false,
-                        searchable: false
+                        searchable: false,
                     }
                 ]
             });
+
+//             var table = $('#category-table').DataTable({
+//     processing: true,
+//     serverSide: true,
+//     ajax: {
+//         url: "{{ route('backend.admin.categories.index') }}",
+//         type: 'GET',
+//         xhrFields: {
+//             withCredentials: true
+//         }
+//     },
+//     columns: [
+//         { data: 'id', name: 'id' },
+//         { data: 'name', name: 'name' },
+//         { data: 'type', name: 'type' },
+//         { data: 'action', name: 'action', orderable: false, searchable: false }
+//     ]
+// });
+
 
             // Save button
             $('#saveBtn').click(function() {

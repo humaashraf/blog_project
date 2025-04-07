@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Providers;
+
 use App\Models\Setting;
 use Illuminate\Support\Facades\View;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,10 +27,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-          // Settings ko har view ke liye share karna
-    View::composer('*', function ($view) {
-        $settings = Setting::first();
-        $view->with('settings', $settings);
-    });
+        // Grant "Super Admin" role all permissions automatically
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('admin') ? true : false;
+        });
+
+        // Settings ko har view ke liye share karna
+        View::composer('*', function ($view) {
+            $settings = Setting::first();
+            $view->with('settings', $settings);
+        });
     }
 }

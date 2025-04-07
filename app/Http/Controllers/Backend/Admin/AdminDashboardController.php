@@ -19,8 +19,14 @@ class AdminDashboardController extends Controller
 
     public function __construct()
     {
-        $this->middleware(['auth', 'role:super_admin']);
+        $this->middleware(['auth', 'role:admin']);
     }
+    // public function __construct()
+    // {
+    //     $this->middleware(['auth', 'redirect.non.authors']);
+    // }
+
+
 
     /**
      * Show the application dashboard.

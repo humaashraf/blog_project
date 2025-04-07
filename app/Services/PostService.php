@@ -6,16 +6,89 @@ use Illuminate\Support\Facades\Log;
 
 class PostService
 {
-    public function getPostsForUser()
-    {
-        $user = Auth::user();
+    // public function getPostsForUser()
+    // {
+    //     $user = Auth::user();
 
-        if (in_array($user->role->name, ['admin', 'super_admin'])) {
-            return Post::with('category', 'tags')->get();
-        } else {
-            return Post::with('category', 'tags')->where('author_id', Auth::id())->get();
-        }
+    //     if (in_array($user->role->name, ['admin', 'admin'])) {
+    //         return Post::with('category', 'tags')->get();
+    //     } else {
+    //         return Post::with('category', 'tags')->where('author_id', Auth::id())->get();
+    //     }
+    // }
+//     public function getPostsForUser()
+// {
+//     $user = Auth::user();
+
+//     if (!$user) {
+//         return collect();
+//     }
+
+//     $query = Post::with('category', 'tags', 'author');
+
+//     if (!$user->hasRole('admin')) {
+//         $query->where('author_id', $user->id);
+//     }
+
+//     return $query;
+// }
+public function getPostsForUser()
+{
+    $user = Auth::user();
+
+    if (!$user) {
+        return collect();
     }
+
+    $query = Post::with(['category', 'tags', 'author']);
+
+    if ($user->type !== 'admin') {
+        $query->where('author_id', $user->id);
+    }
+
+    return $query->get();
+}
+
+
+    // public function getPostsForUser()
+    // {
+    //     $user = Auth::user();
+
+    //     if (!$user) {
+    //         return response()->json(['message' => 'Unauthorized'], 403);
+    //     }
+
+    //     $query = Post::with('category', 'tags');
+
+    //     if (!$user->hasRole(['admin'])) {
+    //         $query->where('author_id', Auth::id());
+    //     }
+
+    //     $posts = $query->get();
+
+    //     return response()->json(['data' => $posts]);
+    // }
+
+
+    // public function getPostsForUser()
+    // {
+    //     $user = Auth::user();
+
+    //     $query = Post::with(['category', 'tags']);
+
+    //     if (!in_array($user->role->name ?? '', ['admin', 'admin'])) {
+    //         $query->where('author_id', $user->id);
+    //     }
+
+    //     // Pehle `get()` use karna hai
+    //     $posts = $query->get();
+
+    //     return response()->json(['data' => $posts]);
+    // }
+
+
+
+
 
 
     public function savePost($request, $post = null)

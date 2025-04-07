@@ -23,7 +23,7 @@ class PendingPostController extends Controller
     public function __construct(PostService $postService)
     {
         $this->postService = $postService;
-        $this->middleware(['auth', 'role:super_admin']); // Only super_admin can access
+        $this->middleware(['auth', 'role:admin']); // Only super_admin can access
     }
 
     public function index(Request $request)

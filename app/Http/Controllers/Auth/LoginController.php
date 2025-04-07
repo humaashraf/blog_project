@@ -3,63 +3,53 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
-
     use AuthenticatesUsers;
 
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    // protected $redirectTo = '/home';
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
     }
 
-    protected function authenticated(Request $request, $user)
-{
-    if ($user->role_id == 1) { // Super Admin
-        return redirect('/admin/dashboard');
-    } elseif ($user->role_id == 2) { // Author
-        return redirect('/author/dashboard');
-    } elseif ($user->role_id == 3) { // Subscriber
-        return redirect('/subscriber');
+    /**
+     * Redirect users after login based on their role.
+     */
+    protected function authenticated(Request $request, User $user)
+    {
+        // // dd($user->hasRole('admin'));
+        // if ($user->hasRole('admin')) {
+        //     return redirect('/admin/dashboard'); // Admin Redirect
+        // } elseif ($user->hasRole('author')) {
+        //     return redirect('/author/dashboard'); // Author Redirect
+        // }
 
+        // return redirect('/'); // Default fallback (Agar koi role match nahi karta)
+
+         // Agar user ka role "author" hai to usay author-dashboard pr redirect karo
+    if ($user->hasRole('author')) {
+        return redirect('/author/dashboard');
     }
 
-    return redirect('/'); // Default fallback
-}
-public function logout(Request $request)
-{
-    Auth::logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
+    // Baqi sab users ko admin dashboard pr bhejo
+    return redirect('/admin/dashboard');
+    }
 
-    return redirect('/login'); // Logout hone ke baad login page par redirect karega
-}
+    /**
+     * Logout function
+     */
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login'); // Logout hone ke baad login page par redirect karega
+    }
 }

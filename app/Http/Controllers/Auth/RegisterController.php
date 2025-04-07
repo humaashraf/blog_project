@@ -7,86 +7,50 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Role;
-
+use Spatie\Permission\Models\Role; // Spatie Role Model Import
 
 class RegisterController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
-
     use RegistersUsers;
 
-    /**
-     * Where to redirect users after registration.
-     *
-     * @var string
-     */
     protected $redirectTo = '/login';
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('guest');
     }
 
     /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-
-    /**
-     * Show the registration form with roles dropdown
+     * Show the registration form with only 'author' role
      */
     public function showRegistrationForm()
     {
-        $roles = Role::whereIn('id', [2, 3])->get(); // Fetch only Author and Subscriber roles
-        return view('auth.register', compact('roles'));
+        return view('auth.register'); // No need to pass roles, as only one role is assigned
     }
+
     protected function validator(array $data)
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role_id' => ['required', 'exists:roles,id'],
         ]);
     }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\Models\User
-     */
     protected function create(array $data)
     {
-
-        return User::create([
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role_id' => $data['role_id'], // Save role_id
-
-
-
-
         ]);
-        // return redirect()->route('login');
 
+        // Ensure 'author' role exists in roles table
+        $role = Role::firstOrCreate(['name' => 'author']);
+
+        // Assign the role to the user
+        $user->assignRole($role);
+
+        return $user;
     }
 }
