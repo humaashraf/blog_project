@@ -11,7 +11,10 @@
                     <div class="row">
                         <div class="col">Contact Sliders</div>
                         <div class="col " >
-                            <a class="btn btn-info mb-3" style="float: right" data-bs-toggle="modal" data-bs-target="#exampleModal" id="add_slider">Add new Slider</a>                        </div>
+                            @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.contacts.store'))
+                            <a class="btn btn-info mb-3" style="float: right" data-bs-toggle="modal" data-bs-target="#exampleModal" id="add_slider">Add new Slider</a>
+                            @endif
+                         </div>
                     </div>
                 </div>
                 <div class="card-body">
@@ -21,7 +24,12 @@
                                 <th scope="col">#</th>
                                 <th scope="col">Image</th>
                                 <th scope="col">Sort by</th>
-                                <th scope="col">Actions</th>
+                                {{-- <th scope="col">Actions</th> --}}
+                                <th scope="col">
+                                    @canany(['backend.admin.contacts.edit', 'backend.admin.contacts.delete'])
+                                        Actions
+                                    @endcanany
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -31,10 +39,7 @@
             </div>
         </div>
     </div>
-<h1 class="mt-4">Contact Sliders</h1>
-<ol class="breadcrumb">
-    <li class="breadcrumb-item active">Contact Sliders</li>
-</ol>
+
 <div class="modal fade ajax-modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
     <form id="ajaxForm">
@@ -66,23 +71,6 @@
     </form>
 </div>
 
-{{-- <div class="row">
-    <div class="col-md-6 offset-3" style="margin-top: 100px;">
-        <a class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal" id="add_slider">Add new Slider</a>
-        <table id="slider-table" class="table">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Image</th>
-                    <th scope="col">Sort by</th>
-                    <th scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-</div> --}}
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
@@ -117,47 +105,8 @@
             ]
         });
 
-        // Save data
-        // $('#saveBtn').click(function() {
-        //     $('.error-messages').html(''); // Clear previous errors
 
-        //     var formData = new FormData($('#ajaxForm')[0]);
-
-        //     // Ensure the image file is appended correctly
-        //     var fileInput = $('#slider_image')[0];
-        //     if (fileInput.files.length > 0) {
-        //         formData.append('slider_image', fileInput.files[0]);
-        //     }
-
-        //     $.ajax({
-        //         url: '{{ route('backend.admin.sliders.store') }}',
-        //         method: 'POST',
-        //         processData: false,
-        //         contentType: false,
-        //         data: formData,
-        //         success: function(response) {
-        //             $('#slider_image').val(''); // Reset file input
-        //             $('#sort_by').val('');
-        //             $('#slider_id').val(''); // Reset hidden input
-        //             $('.ajax-modal').modal('hide'); // Hide modal
-        //             Swal.fire({
-        //                 title: "Success!",
-        //                 text: response.success,
-        //                 icon: "success",
-        //                 confirmButtonText: "OK"
-        //             });
-        //             table.ajax.reload(); // Reload table data
-        //         },
-        //         error: function(error) {
-        //             if (error.status == 422) {
-        //                 var response = JSON.parse(error.responseText);
-        //                 var slider_imageError = response.errors.slider_image;
-        //                 $('#slider_imageError').html(slider_imageError); // Show error for image upload
-        //             }
-        //         }
-        //     });
-        // });
-        $('#saveBtn').click(function() {
+    $('#saveBtn').click(function() {
     $('.error-messages').html(''); // Clear previous errors
 
     var sliderId = $('#slider_id').val();
@@ -166,10 +115,10 @@
     var url = sliderId ? '{{ url("admin/contacts/update") }}/' + sliderId : '{{ route('backend.admin.contacts.store') }}';
     var method = sliderId ? 'POST' : 'POST';
 
-    // Agar sirf `sort_by` update karna hai
+    // If only `sort_by` updates
     if (sliderId) {
-        formData = new FormData(); // Naya FormData create karo
-        formData.append('sort_by', $('#sort_by').val()); // Sirf sort_by add karo
+        formData = new FormData(); // New FormData created
+        formData.append('sort_by', $('#sort_by').val()); // only sort_by added
         formData.append('_token', $('meta[name="csrf-token"]').attr('content')); // CSRF Token
     }
 
@@ -203,8 +152,7 @@
 
 
 
-        //Edit button
-            // $('body').on('click', '.editButton', function() {
+                //Edit button
                 $(document).on('click', '.editButton', function() {
                 var id = $(this).data('href');
 
@@ -221,13 +169,9 @@
                         $('#saveBtn').html('Update Slider');
                         $('#slider_id').val(response.id);
                         $('#sort_by').val(response.sort_by);
-                        // var type = capitalizeFirstLetter(response.type);
-                        // $('#type').val(response.type);
-                         // Hide the image input field in edit mode
-            $('#slider_image').closest('.form-group').hide();
 
+                        $('#slider_image').closest('.form-group').hide();
 
-                        // console.log(response.type);
 
                     },
                     error: function(error) {
