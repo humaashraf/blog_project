@@ -21,7 +21,12 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Subscribed At</th>
-                                <th>Actions</th>
+                                {{-- <th>Actions</th> --}}
+                                <th scope="col">
+                                    @canany(['backend.admin.newsletters.destroy'])
+                                        Actions
+                                    @endcanany
+                                </th>
                             </tr>
                         </thead>
                         <tbody>

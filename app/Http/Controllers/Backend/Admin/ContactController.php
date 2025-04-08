@@ -9,27 +9,62 @@ use Yajra\DataTables\Facades\DataTables;
 
 class ContactController extends Controller
 {
+    // public function index(Request $request)
+    // {
+    //     if ($request->ajax()) {
+    //         $sliders = ContactSlider::select([
+    //             'id',
+    //             'slider_image',
+    //             'sort_by', // Added new column
+    //         ])->orderBy('sort_by', 'desc'); // Sorting by sort_by column
+
+    //         return DataTables::of($sliders)
+    //             ->addColumn('image', fn($row) => $row->slider_image ? '<img src="' . asset('uploads/' . $row->slider_image) . '" width="50" height="50">' : 'No Image')
+    //             ->addColumn('action', function($row){
+    //                 return '<a data-href="'.$row->id.'" class="btn-sm btn btn-info editButton">Edit</a>
+    //                         <a href="javascript:void(0);" data-id="'.$row->id.'" class="btn-sm btn btn-danger delButton">Delete</a>';
+    //             })
+    //             ->rawColumns(['action', 'image'])
+    //             ->make(true);
+    //     }
+
+    //     return view('backend.admin.contacts.create');
+    // }
     public function index(Request $request)
-    {
-        if ($request->ajax()) {
-            $sliders = ContactSlider::select([
-                'id',
-                'slider_image',
-                'sort_by', // Added new column
-            ])->orderBy('sort_by', 'desc'); // Sorting by sort_by column
+{
+    if ($request->ajax()) {
+        $role = auth()->user()->roles()->first(); // Get current user's role
 
-            return DataTables::of($sliders)
-                ->addColumn('image', fn($row) => $row->slider_image ? '<img src="' . asset('uploads/' . $row->slider_image) . '" width="50" height="50">' : 'No Image')
-                ->addColumn('action', function($row){
-                    return '<a data-href="'.$row->id.'" class="btn-sm btn btn-info editButton">Edit</a>
-                            <a href="javascript:void(0);" data-id="'.$row->id.'" class="btn-sm btn btn-danger delButton">Delete</a>';
-                })
-                ->rawColumns(['action', 'image'])
-                ->make(true);
-        }
+        $sliders = ContactSlider::select([
+            'id',
+            'slider_image',
+            'sort_by',
+        ])->orderBy('sort_by', 'desc');
 
-        return view('backend.admin.contacts.create');
+        return DataTables::of($sliders)
+            ->addColumn('image', fn($row) => $row->slider_image ? '<img src="' . asset('uploads/' . $row->slider_image) . '" width="50" height="50">' : 'No Image')
+            ->addColumn('action', function ($row) use ($role) {
+                $buttons = '';
+
+                if (auth()->check()) {
+                    if ($role->hasPermissionTo('backend.admin.contacts.edit')) {
+                        $buttons .= '<a data-href="' . $row->id . '" class="btn-sm btn btn-info editButton">Edit</a> ';
+                    }
+
+                    if ($role->hasPermissionTo('backend.admin.contacts.delete')) {
+                        $buttons .= '<a href="javascript:void(0);" data-id="' . $row->id . '" class="btn-sm btn btn-danger delButton">Delete</a>';
+                    }
+                }
+
+                return $buttons;
+            })
+            ->rawColumns(['action', 'image'])
+            ->make(true);
     }
+
+    return view('backend.admin.contacts.create');
+}
+
 
     public function store(Request $request)
     {

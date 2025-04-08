@@ -122,9 +122,15 @@ public function home(Request $request)
 
     public function about()
     {
+
         $about = About::first(); // About data fetch
         $settings = Setting::first();
-        return view('frontend.about', compact('about', 'settings'));
+        // $latestPost = Post::latest()->first(); // Latest post fetch
+        $firstPost = Post::whereNotNull('published_at')
+        ->where('is_approved', 1)
+        ->orderBy('published_at', 'desc')
+        ->first();
+        return view('frontend.about', compact('about', 'settings', 'firstPost'));
     }
 
     public function contact()
