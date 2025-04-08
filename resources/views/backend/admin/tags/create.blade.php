@@ -12,7 +12,10 @@
                     <div class="row">
                         <div class="col">Tags</div>
                         <div class="col " >
+                            @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.tags.store'))
                             <a class="btn btn-info mb-3" data-bs-toggle="modal" style="float: right;" data-bs-target="#exampleModal" id="add_tag">Add new Tag</a>
+                            @endif
+                            {{-- <a class="btn btn-info mb-3" data-bs-toggle="modal" style="float: right;" data-bs-target="#exampleModal" id="add_tag">Add new Tag</a> --}}
                         </div>
                     </div>
                 </div>
@@ -22,7 +25,12 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Name</th>
-                                <th scope="col">Actions</th>
+                                {{-- <th scope="col">Actions</th> --}}
+                                <th scope="col">
+                                    @canany(['backend.admin.tags.edit', 'backend.admin.tags.delete'])
+                                        Actions
+                                    @endcanany
+                                </th>
                             </tr>
                         </thead>
                         <tbody>

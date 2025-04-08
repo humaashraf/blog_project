@@ -59,9 +59,9 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->middleware('gue
 
 
 
-
 Route::prefix('admin')->group(function () {
-    Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::middleware(['auth', 'role:admin,manager'])->group(function () {
+
         // Route::middleware(['auth', 'role:admin|manager|reader'])->group(function () {
 
     // Route::middleware(['auth', 'redirect.non.authors'])->group(function () {
@@ -177,6 +177,7 @@ Route::prefix('admin')->group(function () {
 
 Route::prefix('author')->group(function () {
     Route::middleware(['auth', 'role:author'])->group(function () {
+
 
         Route::get('/dashboard', [AuthorController::class, 'index'])->name('dashboard');
         Route::get('posts', [AuthorPostsController::class, 'index'])->name('backend.author.posts.index');

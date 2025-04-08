@@ -11,9 +11,13 @@
                     <div class="row">
                         <div class="col">Categories</div>
                         <div class="col " >
-                            @can('backend.admin.categories.store')
+                            {{-- @can('backend.admin.categories.store')
                             <a class="btn btn-info mb-3" data-bs-toggle="modal" style="float: right;" data-bs-target="#exampleModal" id="add_category">Add new Category</a>
-                            @endcan
+                            @endcan --}}
+                            @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.categories.store'))
+                                <a class="btn btn-info mb-3" data-bs-toggle="modal" style="float: right;" data-bs-target="#exampleModal" id="add_category">Add new Category</a>
+                            @endif
+
                         </div>
                     </div>
                 </div>

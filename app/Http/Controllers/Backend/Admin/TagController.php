@@ -12,26 +12,65 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 class TagController extends Controller
 {
-    public function index(Request $request)
+//     public function index(Request $request)
+// {
+//     if ($request->ajax()) {
+//         $tags = Tag::with('posts')->select('id', 'name');
+
+//         return DataTables::of($tags)
+//             ->addColumn('posts', function ($row) {
+//                 return $row->posts->pluck('title')->implode(', ');
+//             })
+//             ->addColumn('action', function ($row) {
+//                 return '<a href="javascript:void(0)" class="btn-sm btn btn-info editButton" data-id="'.$row->id.'">Edit</a>
+//                         <a href="javascript:void(0)" class="btn-sm btn btn-danger delButton" data-id="'.$row->id.'">Delete</a>';
+//             })
+//             ->rawColumns(['action'])
+//             ->make(true);
+//     }
+
+//     $posts = Post::all(); // Fetch posts
+//     return view('backend.admin.tags.create', compact('posts'));
+// }
+
+public function index(Request $request)
 {
     if ($request->ajax()) {
+        $role = auth()->user()->roles()->first();  // Get the user's first role
+
         $tags = Tag::with('posts')->select('id', 'name');
 
         return DataTables::of($tags)
             ->addColumn('posts', function ($row) {
                 return $row->posts->pluck('title')->implode(', ');
             })
-            ->addColumn('action', function ($row) {
-                return '<a href="javascript:void(0)" class="btn-sm btn btn-info editButton" data-id="'.$row->id.'">Edit</a>
-                        <a href="javascript:void(0)" class="btn-sm btn btn-danger delButton" data-id="'.$row->id.'">Delete</a>';
+            ->addColumn('action', function ($row) use ($role) {
+                $buttons = '';
+
+                // Check if the user is authenticated and has the right permissions
+                if (auth()->check()) {
+
+                    // Check if the user has permission to edit the tag
+                    if ($role->hasPermissionTo('backend.admin.tags.edit')) {
+                        $buttons .= '<a href="' . route('backend.admin.tags.edit', $row->id) . '" class="btn-sm btn btn-info editButton">Edit</a> ';
+                    }
+
+                    // Check if the user has permission to delete the tag
+                    if ($role->hasPermissionTo('backend.admin.tags.delete')) {
+                        $buttons .= '<a href="' . route('backend.admin.tags.delete', $row->id) . '" class="btn-sm btn btn-danger delButton">Delete</a>';
+                    }
+                }
+
+                return $buttons;  // Return the action buttons
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action'])  // Make the action column raw to support HTML
             ->make(true);
     }
 
     $posts = Post::all(); // Fetch posts
     return view('backend.admin.tags.create', compact('posts'));
 }
+
 
 
     public function store(Request $request)
@@ -99,7 +138,7 @@ public function showPosts($slug)
     $posts = $tag->posts()
         ->whereNotNull('published_at')
         ->latest()
-        ->get(); 
+        ->get();
 
     return view('frontend.tag_posts', compact('tag', 'posts'));
 }

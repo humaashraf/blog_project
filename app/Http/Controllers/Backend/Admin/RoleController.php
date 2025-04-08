@@ -65,9 +65,14 @@ class RoleController extends Controller
         ]);
 
         $role = Role::findOrFail($id);
-        $role->update(['name' => $validated['name']]);
-        // Correct way to sync permissions
-        $role->permissions()->sync($validated['permissions']);
+        // dd(auth()->user()->getPermissionsViaRoles()->toArray());
+        // dd($validated['permissions']);
+        // $role->update(['name' => $validated['name']]);
+        // // Correct way to sync permissions
+        // $role->permissions()->detach($role->getAllPermissions());
+        // $role->permissions()->attach($validated['permissions']);
+        $permissions = Permission::whereIn('id',$validated['permissions'])->get();
+        $role->syncPermissions($permissions);
 
         return response()->json(['success' => 'Role updated successfully!']);
     } catch (\Exception $e) {

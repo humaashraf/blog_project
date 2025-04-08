@@ -11,7 +11,10 @@
                     <div class="row">
                         <div class="col">Posts</div>
                         <div class="col " >
+                            @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.posts.store'))
                             <a class="btn btn-info mb-2 mt-2" style="float: right;" data-bs-toggle="modal" data-bs-target="#exampleModal" id="add_post">Add new Post</a>
+                            @endif
+                            {{-- <a class="btn btn-info mb-2 mt-2" style="float: right;" data-bs-toggle="modal" data-bs-target="#exampleModal" id="add_post">Add new Post</a> --}}
                         </div>
                     </div>
                 </div>
@@ -27,7 +30,18 @@
                                 <th scope="col">Approval Status</th>
                                 <th scope="col">Tags</th>
                                 <th scope="col">Author Name</th>
-                                <th scope="col">Actions</th>
+                                {{-- <th scope="col">Actions</th> --}}
+                                {{-- <th scope="col">
+                                    @canany(['backend.admin.posts.edit', 'backend.admin.posts.delete', 'backend.admin.post.show'])
+                                        Actions
+                                    @endcanany
+                                </th> --}}
+                                <th scope="col">
+                                    @canany(['backend.admin.posts.edit', 'backend.admin.posts.delete', 'backend.admin.post.show'])
+                                        Actions
+                                    @endcanany
+                                </th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -108,7 +122,7 @@
             var table = $('#post-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('backend.admin.posts.index') }}",
+                ajax: "/admin/posts",
                 columns: [{
                         data: 'id',
                         name: 'id'

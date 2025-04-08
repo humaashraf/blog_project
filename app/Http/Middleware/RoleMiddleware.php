@@ -43,12 +43,13 @@ public function handle(Request $request, Closure $next, $role)
 
     // Debugging: Check user role
     // dd(Auth::user()->getRoleNames());
-    // dd(Auth::user()->getAllPermissions(),auth()->user()->can('backend.dashboard'));
+    // dd(Auth::user()->getAllPermissions()->toArray(),auth()->user()->can('backend.admin.categories.store'));
 
     // if (!Auth::user()->hasRole($role)) {
     //     abort(403, 'Unauthorized - Role mismatch');
     // }
     $user = Auth::user();
+//    dd($user->type,$role);
     if ($user->type !== $role) {
         abort(403, 'Unauthorized - Type mismatch');
     }

@@ -22,17 +22,21 @@ class PostController extends Controller
     public function __construct(PostService $postService)
     {
         $this->postService = $postService;
-        $this->middleware(['auth', 'role:admin']); // Only admin can access
+        //
+        $this->middleware(['auth' ,'role:admin,manager']); // Only admin can access
     }
 
 
     public function index(Request $request)
     {
-        if ($request->ajax()) {
-            // $posts = $this->postService->getPostsForUser();
-                    // Filter only approved and published posts
-        $posts = $this->postService->getPostsForUser()->where('is_approved', 1)->whereNotNull('published_at');
 
+        if ($request->ajax()) {
+            $role = auth()->user()->roles()->first();
+
+            // $posts = $this->postService->getPostsForUser();
+            // Filter only approved and published posts
+            $posts = $this->postService->getPostsForUser()->where('is_approved', 1)->whereNotNull('published_at');
+            // $posts = collect([]);
             return DataTables::of($posts)
                 ->addColumn('category', fn($row) => $row->category->name ?? 'No Category')
                 ->addColumn('tags', fn($row) => $row->tags->pluck('name')->implode(', ') ?? 'No Tags')
@@ -48,16 +52,47 @@ class PostController extends Controller
                     }
                     return '<span class="badge bg-secondary">Unknown</span>';
                 })
-                ->addColumn('action', fn($row) => '<a href="javascript:void(0)" class="btn-sm btn btn-info viewButton" data-slug="' . Str::slug($row->title) . '" data-id="' . $row->id . '">View</a>
-                        <a href="javascript:void(0)" class="btn-sm btn btn-warning editButton" data-id="' . $row->id . '">Edit</a>
-                        <a href="javascript:void(0)" class="btn-sm btn btn-danger delButton" data-id="' . $row->id . '">Delete</a>')
-                ->rawColumns(['image','approval_status', 'action'])
-                ->make(true);
-        }
+        //         ->addColumn('action', fn($row)  => '<a href="javascript:void(0)" class="btn-sm btn btn-info viewButton" data-slug="' . Str::slug($row->title) . '" data-id="' . $row->id . '">View</a>
+        //                 <a href="javascript:void(0)" class="btn-sm btn btn-warning editButton" data-id="' . $row->id . '">Edit</a>
+        //                 <a href="javascript:void(0)" class="btn-sm btn btn-danger delButton" data-id="' . $row->id . '">Delete</a>')
+        //         ->rawColumns(['image', 'approval_status', 'action'])
+        //         ->make(true);
+        // }
 
-        $categories = Category::all();
-        $tags = Tag::all();
-        return view('backend.admin.posts.create', compact('categories', 'tags'));
+        // $categories = Category::all();
+        // $tags = Tag::all();
+        // return view('backend.admin.posts.create', compact('categories', 'tags'));
+        ->addColumn('action', function ($row) use ($role) {
+            $buttons = '';
+
+            // Check if user has permission to view, edit, or delete posts
+                            // View button
+                            // $buttons .= '<a href="javascript:void(0)" class="btn-sm btn btn-info viewButton" data-slug="' . Str::slug($row->title) . '" data-id="' . $row->id . '">View</a> ';
+
+            if ($role->hasPermissionTo('backend.admin.post.show')) {
+                $buttons .= '<a href="javascript:void(0)" class="btn-sm btn btn-info viewButton" data-slug="' . Str::slug($row->title) . '" data-id="' . $row->id . '">View</a> ';
+            }
+
+            if ($role->hasPermissionTo('backend.admin.posts.edit')) {
+                $buttons .= '<a href="javascript:void(0)" class="btn-sm btn btn-warning editButton" data-id="' . $row->id . '">Edit</a> ';
+            }
+
+            if ($role->hasPermissionTo('backend.admin.posts.delete')) {
+                $buttons .= '<a href="javascript:void(0)" class="btn-sm btn btn-danger delButton" data-id="' . $row->id . '">Delete</a>';
+            }
+
+            return $buttons;
+        })
+        ->rawColumns(['image', 'approval_status', 'action'])  // Render raw HTML for image, approval status, and action buttons
+        ->make(true);
+}
+
+// Get categories and tags for the create post view
+$categories = Category::all();
+$tags = Tag::all();
+
+// Return the create view with categories and tags
+return view('backend.admin.posts.create', compact('categories', 'tags'));
     }
 
     public function store(Request $request)
@@ -75,24 +110,22 @@ class PostController extends Controller
 
             // $post = $this->postService->savePost($request, $post);
             // Save post using service class
-        $post = $this->postService->savePost($request, $post);
+            $post = $this->postService->savePost($request, $post);
 
-        // Only set is_approved and published_at here
-        $post->is_approved = 1;
-        $post->published_at = Carbon::now();
-        $post->save(); // Save the changes
+            // Only set is_approved and published_at here
+            $post->is_approved = 1;
+            $post->published_at = Carbon::now();
+            $post->save(); // Save the changes
 
             return response()->json([
                 'success' => $post->wasRecentlyCreated ? 'Post created successfully!' : 'Post updated successfully!',
                 'post' => $post
             ], $post->wasRecentlyCreated ? 201 : 200);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::warning('Validation Error:', $e->errors());
             return response()->json([
                 'errors' => $e->errors()
             ], 422);
-
         } catch (\Exception $e) {
             Log::error('Post store error:', [
                 'message' => $e->getMessage(),
@@ -104,48 +137,48 @@ class PostController extends Controller
         }
     }
 
-//     public function store(Request $request)
-// {
-//     try {
-//         Log::info('Storing post:', $request->all());
+    //     public function store(Request $request)
+    // {
+    //     try {
+    //         Log::info('Storing post:', $request->all());
 
-//         $post = $request->post_id ? Post::find($request->post_id) : null;
+    //         $post = $request->post_id ? Post::find($request->post_id) : null;
 
-//         if ($request->post_id && !$post) {
-//             return response()->json([
-//                 'error' => 'Post not found!'
-//             ], 404);
-//         }
+    //         if ($request->post_id && !$post) {
+    //             return response()->json([
+    //                 'error' => 'Post not found!'
+    //             ], 404);
+    //         }
 
-//         // // Post save karne se pehle is_approved aur published_by set kar dein
-//         // $request->merge([
-//         //     'is_approved' => 1, // Approve by default
-//         //     'published_by' => auth()->user()->id // Current admin user ID
-//         // ]);
+    //         // // Post save karne se pehle is_approved aur published_by set kar dein
+    //         // $request->merge([
+    //         //     'is_approved' => 1, // Approve by default
+    //         //     'published_by' => auth()->user()->id // Current admin user ID
+    //         // ]);
 
-//         $post = $this->postService->savePost($request, $post);
+    //         $post = $this->postService->savePost($request, $post);
 
-//         return response()->json([
-//             'success' => $post->wasRecentlyCreated ? 'Post created successfully!' : 'Post updated successfully!',
-//             'post' => $post
-//         ], $post->wasRecentlyCreated ? 201 : 200);
+    //         return response()->json([
+    //             'success' => $post->wasRecentlyCreated ? 'Post created successfully!' : 'Post updated successfully!',
+    //             'post' => $post
+    //         ], $post->wasRecentlyCreated ? 201 : 200);
 
-//     } catch (\Illuminate\Validation\ValidationException $e) {
-//         Log::warning('Validation Error:', $e->errors());
-//         return response()->json([
-//             'errors' => $e->errors()
-//         ], 422);
+    //     } catch (\Illuminate\Validation\ValidationException $e) {
+    //         Log::warning('Validation Error:', $e->errors());
+    //         return response()->json([
+    //             'errors' => $e->errors()
+    //         ], 422);
 
-//     } catch (\Exception $e) {
-//         Log::error('Post store error:', [
-//             'message' => $e->getMessage(),
-//             'trace' => $e->getTraceAsString()
-//         ]);
-//         return response()->json([
-//             'error' => 'Something went wrong. Please try again later!',
-//         ], 500);
-//     }
-// }
+    //     } catch (\Exception $e) {
+    //         Log::error('Post store error:', [
+    //             'message' => $e->getMessage(),
+    //             'trace' => $e->getTraceAsString()
+    //         ]);
+    //         return response()->json([
+    //             'error' => 'Something went wrong. Please try again later!',
+    //         ], 500);
+    //     }
+    // }
 
 
     public function edit($id)
@@ -160,41 +193,41 @@ class PostController extends Controller
             response()->json(['success' => 'Post Deleted Successfully!'], 200) :
             abort(404);
     }
-//     public function show($id)
-// {
-//     $post = Post::findOrFail($id);
-//     return view('frontend.post-detail', compact('post'));
-// }
+    //     public function show($id)
+    // {
+    //     $post = Post::findOrFail($id);
+    //     return view('frontend.post-detail', compact('post'));
+    // }
 
-// public function show($slug, $id, $request)
-// {
-//     $post = Post::findOrFail($id);
-//         // Visitor data save karo
-//         Visitor::create([
-//             'post_id' => $post->id,
-//             'visitor_ip' => $request->ip(),
-//         ]);
-//     return view('frontend.post-detail', compact('post'));
-// }
+    // public function show($slug, $id, $request)
+    // {
+    //     $post = Post::findOrFail($id);
+    //         // Visitor data save karo
+    //         Visitor::create([
+    //             'post_id' => $post->id,
+    //             'visitor_ip' => $request->ip(),
+    //         ]);
+    //     return view('frontend.post-detail', compact('post'));
+    // }
 
 
-public function show($slug, $id, Request $request)  // Request ko dependency injection se lo
-{
-    $post = Post::findOrFail($id);
+    public function show($slug, $id, Request $request)  // Request ko dependency injection se lo
+    {
+        $post = Post::findOrFail($id);
 
-    // Visitor data save karo
-    Visitor::create([
-        'post_id' => $post->id,
-        'visitor_ip' => $request->ip(),
-    ]);
+        // Visitor data save karo
+        Visitor::create([
+            'post_id' => $post->id,
+            'visitor_ip' => $request->ip(),
+        ]);
 
-    return view('frontend.post-detail', compact('post'));
-}
+        return view('frontend.post-detail', compact('post'));
+    }
 
-// public function show_admin($id)
-// {
-//     $post = Post::findOrFail($id);
-//     return view('frontend.post-detail', compact('post'));
-// }
+    // public function show_admin($id)
+    // {
+    //     $post = Post::findOrFail($id);
+    //     return view('frontend.post-detail', compact('post'));
+    // }
 
 }

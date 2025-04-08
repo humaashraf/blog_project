@@ -18,66 +18,35 @@ class CategoryController extends Controller
 
     public function index(Request $request)
     {
-        // dd(auth()->user()->can('backend.admin.categories.edit'));
-        // dd(auth()->user()->can('backend.admin.categories.delete'));
-
-        // dd(
-        //     'Edit Permission: ' . (auth()->user()->can('backend.admin.categories.edit') ? 'Yes' : 'No'),
-        //     'Delete Permission: ' . (auth()->user()->can('backend.admin.categories.delete') ? 'Yes' : 'No'),
-        //     'All Permissions: ' . json_encode(auth()->user()->getAllPermissions()->pluck('name'))
-        // );
 
 
 
+    //     dd(auth()->user()->getPermissionsViaRoles()->toArray(),
+    //     auth()->user()->can('backend.admin.categories.delete'),
+    //     $role->hasPermissionTo('backend.admin.categories.delete')
+    // );
 
         if ($request->ajax()) {
-
+            $role = auth()->user()->roles()->first();
             $categories = Category::select([
                 'id',
                 'name',
                 'type',
             ]);
 
-            // return DataTables::of($categories)
-            //     ->addColumn('action', function($row){
-            //         return '<a data-href="'.$row->id.'" class="btn-sm btn btn-info editButton">Edit</a>
-            //                 <a data-href="'.$row->id.'" class="btn-sm btn btn-danger delButton">Delete</a>';
-            //     })
-            //     ->rawColumns(['action'])
 
             return DataTables::of($categories)
-            ->addColumn('action', function ($row) {
+            ->addColumn('action', function ($row) use($role) {
                 $buttons = '';
 
-                // if (auth()->user()->hasPermissionTo('backend.admin.categories.edit')) {
-                //     $buttons .= '<a data-href="' . $row->id . '" class="btn-sm btn btn-info editButton">Edit</a> ';
-                // }
-
-                // if (auth()->user()->hasPermissionTo('backend.admin.categories.delete')) {
-                //     $buttons .= '<a data-href="' . $row->id . '" class="btn-sm btn btn-danger delButton">Delete</a>';
-                // }
-
-                // if (auth()->user()->hasRole('admin') && auth()->user()->can('backend.admin.categories.edit')) {
-                //     $buttons .= '<a data-href="' . $row->id . '" class="btn-sm btn btn-info editButton">Edit</a> ';
-                // }
-
-                // if (auth()->user()->hasRole('admin') && auth()->user()->can('backend.admin.categories.delete')) {
-                //     $buttons .= '<a data-href="' . $row->id . '" class="btn-sm btn btn-danger delButton">Delete</a>';
-                // }
-
-                // if (auth()->user()->can('backend.admin.categories.edit')) {
-                //     $buttons .= '<a data-href="' . $row->id . '" class="btn-sm btn btn-info editButton">Edit</a> ';
-                // }
-
-                // if (auth()->user()->can('backend.admin.categories.delete')) {
-                //     $buttons .= '<a data-href="' . $row->id . '" class="btn-sm btn btn-danger delButton">Delete</a>';
-                // }
                 // First check if user is authenticated
                 if (auth()->check()) {
-                    if (auth()->user()->can('backend.admin.categories.edit')) {
+
+                    // dd(auth()->user()->can('backend.admin.categories.edit'),auth()->user()->can('backend.admin.categories.edit'));
+                    if ($role->hasPermissionTo('backend.admin.categories.edit')) {
                         $buttons .= '<a href="' . route('backend.admin.categories.edit', $row->id) . '" class="btn-sm btn btn-info editButton">Edit</a> ';
                     }
-                    if (auth()->user()->can('backend.admin.categories.delete')) {
+                    if ( $role->hasPermissionTo('backend.admin.categories.delete')) {
                         $buttons .= '<a href="' . route('backend.admin.categories.delete', $row->id) . '" class="btn-sm btn btn-danger delButton">Delete</a>';
                     }
                 }
@@ -92,6 +61,7 @@ class CategoryController extends Controller
         }
 
         return view('backend.admin.categories.create');
+
     }
     public function store(Request $request)
     {

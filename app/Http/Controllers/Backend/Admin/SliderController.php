@@ -12,6 +12,7 @@ class SliderController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
+            $role = auth()->user()->roles()->first();
             $sliders = Slider::select([
                 'id',
                 'slider_image',
@@ -20,17 +21,41 @@ class SliderController extends Controller
 
             return DataTables::of($sliders)
                 ->addColumn('image', fn($row) => $row->slider_image ? '<img src="' . asset('uploads/' . $row->slider_image) . '" width="50">' : 'No Image')
-                ->addColumn('action', function($row){
-                    return '<a data-href="'.$row->id.'" class="btn-sm btn btn-info editButton">Edit</a>
-                            <a href="javascript:void(0);" data-id="'.$row->id.'" class="btn-sm btn btn-danger delButton">Delete</a>';
-                })
-                ->rawColumns(['action', 'image'])
-                ->make(true);
+    //             ->addColumn('action', function($row) use($role){
+    //                 return '<a data-href="'.$row->id.'" class="btn-sm btn btn-info editButton">Edit</a>
+    //                         <a href="javascript:void(0);" data-id="'.$row->id.'" class="btn-sm btn btn-danger delButton">Delete</a>';
+    //             })
+    //             ->rawColumns(['action', 'image'])
+    //             ->make(true);
+    //     }
+
+    //     return view('backend.admin.sliders.create');
+    // }
+    ->addColumn('action', function($row) use ($role) {
+        $buttons = '';
+
+        // Check if the user is authenticated and has the right permissions
+        if (auth()->check()) {
+
+            // Check if the user has permission to edit the slider
+            if ($role->hasPermissionTo('backend.admin.sliders.edit')) {
+                $buttons .= '<a data-href="' . $row->id . '" class="btn-sm btn btn-info editButton">Edit</a> ';
+            }
+
+            // Check if the user has permission to delete the slider
+            if ($role->hasPermissionTo('backend.admin.sliders.delete')) {
+                $buttons .= '<a href="javascript:void(0);" data-id="' . $row->id . '" class="btn-sm btn btn-danger delButton">Delete</a>';
+            }
         }
 
-        return view('backend.admin.sliders.create');
-    }
+        return $buttons; // Return the action buttons
+    })
+    ->rawColumns(['action', 'image']) // Make the action and image columns raw to support HTML
+    ->make(true);
+}
 
+return view('backend.admin.sliders.create');
+}
     public function store(Request $request)
     {
         $request->validate([

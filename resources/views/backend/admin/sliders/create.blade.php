@@ -11,7 +11,11 @@
                     <div class="row">
                         <div class="col">Sliders</div>
                         <div class="col " >
-                            <a class="btn btn-info mb-3" style="float: right" data-bs-toggle="modal" data-bs-target="#exampleModal" id="add_slider">Add new Slider</a>                        </div>
+                            @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.sliders.store'))
+                            <a class="btn btn-info mb-3" style="float: right" data-bs-toggle="modal" data-bs-target="#exampleModal" id="add_slider">Add new Slider</a>
+                            @endif
+                            {{-- <a class="btn btn-info mb-3" style="float: right" data-bs-toggle="modal" data-bs-target="#exampleModal" id="add_slider">Add new Slider</a> --}}
+                         </div>
                     </div>
                 </div>
                 <div class="card-body">
@@ -21,7 +25,12 @@
                                 <th scope="col">#</th>
                                 <th scope="col">Image</th>
                                 <th scope="col">Sort by</th>
-                                <th scope="col">Actions</th>
+                                {{-- <th scope="col">Actions</th> --}}
+                                <th scope="col">
+                                    @canany(['backend.admin.sliders.edit', 'backend.admin.sliders.delete'])
+                                        Actions
+                                    @endcanany
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
