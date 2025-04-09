@@ -29,6 +29,7 @@ class PendingPostController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
+            $role = auth()->user()->roles()->first();
             // $posts = $this->postService->getPostsForUser();
                     // Filter only approved and published posts
         $posts = $this->postService->getPostsForUser()->where('is_approved', 0)->whereNull('published_at');
@@ -38,12 +39,34 @@ class PendingPostController extends Controller
                 ->addColumn('tags', fn($row) => $row->tags->pluck('name')->implode(', ') ?? 'No Tags')
                 ->addColumn('author', fn($row) => $row->author->name ?? 'No Author') // Show author name
                 ->addColumn('image', fn($row) => $row->image ? '<img src="' . asset('uploads/' . $row->image) . '" width="50">' : 'No Image')
-                ->addColumn('action', fn($row) => '<a href="javascript:void(0)" class="btn-sm btn btn-danger denyButton" data-id="' . $row->id . '">Deny</a>
-                <a href="javascript:void(0)" class="btn-sm btn btn-success approveButton" data-id="' . $row->id . '">Approve</a>
-                <button class="btn btn-danger btn-sm deleteBtn" data-id="'.$row->id.'">Delete</button>')
-                ->rawColumns(['image', 'action'])
-                ->make(true);
-        }
+        //         ->addColumn('action', fn($row) => '<a href="javascript:void(0)" class="btn-sm btn btn-danger denyButton" data-id="' . $row->id . '">Deny</a>
+        //         <a href="javascript:void(0)" class="btn-sm btn btn-success approveButton" data-id="' . $row->id . '">Approve</a>
+        //         <button class="btn btn-danger btn-sm deleteBtn" data-id="'.$row->id.'">Delete</button>')
+        //         ->rawColumns(['image', 'action'])
+        //         ->make(true);
+        // }
+        ->addColumn('action', function ($row) use ($role) {
+            $buttons = '';
+
+            if (auth()->check()) {
+                if ($role->hasPermissionTo('backend.admin.pendingposts.deny')) {
+                    $buttons .= '<a href="javascript:void(0)" class="btn-sm btn btn-danger denyButton" data-id="' . $row->id . '">Deny</a> ';
+                }
+
+                if ($role->hasPermissionTo('backend.admin.pendingposts.approve')) {
+                    $buttons .= '<a href="javascript:void(0)" class="btn-sm btn btn-success approveButton" data-id="' . $row->id . '">Approve</a> ';
+                }
+
+                if ($role->hasPermissionTo('backend.admin.pendingposts.delete')) {
+                    $buttons .= '<button class="btn btn-danger btn-sm deleteBtn" data-id="'.$row->id.'">Delete</button>';
+                }
+            }
+
+            return $buttons;
+        })
+        ->rawColumns(['action', 'image'])
+        ->make(true);
+}
 
         $categories = Category::all();
         $tags = Tag::all();

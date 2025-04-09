@@ -52,22 +52,10 @@ class PostController extends Controller
                     }
                     return '<span class="badge bg-secondary">Unknown</span>';
                 })
-        //         ->addColumn('action', fn($row)  => '<a href="javascript:void(0)" class="btn-sm btn btn-info viewButton" data-slug="' . Str::slug($row->title) . '" data-id="' . $row->id . '">View</a>
-        //                 <a href="javascript:void(0)" class="btn-sm btn btn-warning editButton" data-id="' . $row->id . '">Edit</a>
-        //                 <a href="javascript:void(0)" class="btn-sm btn btn-danger delButton" data-id="' . $row->id . '">Delete</a>')
-        //         ->rawColumns(['image', 'approval_status', 'action'])
-        //         ->make(true);
-        // }
 
-        // $categories = Category::all();
-        // $tags = Tag::all();
-        // return view('backend.admin.posts.create', compact('categories', 'tags'));
         ->addColumn('action', function ($row) use ($role) {
             $buttons = '';
 
-            // Check if user has permission to view, edit, or delete posts
-                            // View button
-                            // $buttons .= '<a href="javascript:void(0)" class="btn-sm btn btn-info viewButton" data-slug="' . Str::slug($row->title) . '" data-id="' . $row->id . '">View</a> ';
 
             if ($role->hasPermissionTo('backend.admin.post.show')) {
                 $buttons .= '<a href="javascript:void(0)" class="btn-sm btn btn-info viewButton" data-slug="' . Str::slug($row->title) . '" data-id="' . $row->id . '">View</a> ';

@@ -25,7 +25,12 @@
                                 <th scope="col">Category</th>
                                 <th scope="col">Tags</th>
                                 <th scope="col">Author Name</th>
-                                <th scope="col">Actions</th>
+                                {{-- <th scope="col">Actions</th> --}}
+                                <th scope="col">
+                                    @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.pendingposts.deny') || auth()->user()->roles->first()->hasPermissionTo('backend.admin.pendingposts.approve') || auth()->user()->roles->first()->hasPermissionTo('backend.admin.pendingposts.delete'))
+                                        Actions
+                                    @endif
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
