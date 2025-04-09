@@ -22,7 +22,7 @@ class NewsletterController extends Controller
 
                     // Only show delete button if user has delete permission
                     if (auth()->check() && $role->hasPermissionTo('backend.admin.newsletters.destroy')) {
-                        $buttons .= '<button class="btn btn-danger btn-sm deleteBtn" data-id="' . $row->id . '">Delete</button>';
+                        $buttons .= '<button class="btn btn-danger btn-sm btn-sm deleteBtn" data-id="' . $row->id . '">Delete</button>';
                     }
 
                     return $buttons;

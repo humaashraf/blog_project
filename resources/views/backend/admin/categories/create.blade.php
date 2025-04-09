@@ -30,17 +30,15 @@
                                 <th scope="col">Type</th>
                                 {{-- <th scope="col">Actions</th> --}}
                                 <th scope="col">
-                                    @canany(['backend.admin.categories.edit', 'backend.admin.categories.delete'])
+                                    @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.categories.edit') || auth()->user()->roles->first()->hasPermissionTo('backend.admin.categories.delete'))
                                         Actions
-                                    @endcanany
+                                    @endif
                                 </th>
+
 
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- @can('backend.admin.categories.edit')
-                                <a href="{{ route('backend.admin.categories.edit', $row->id) }}" class="btn-sm btn btn-info">Edit</a>
-                            @endcan --}}
 
                         </tbody>
                     </table>
@@ -91,24 +89,6 @@
             </div>
         </form>
     </div>
-
-    {{-- <div class="row">
-        <div class="col-md-6 offset-3" style="margin-top: 100px;">
-            <a class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal" id="add_category">Add new Category</a>
-            <table id="category-table" class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Type</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div> --}}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>

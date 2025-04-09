@@ -22,10 +22,11 @@
                                 <th>Email</th>
                                 <th>Subscribed At</th>
                                 {{-- <th>Actions</th> --}}
+            
                                 <th scope="col">
-                                    @canany(['backend.admin.newsletters.destroy'])
+                                    @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.newsletters.destroy'))
                                         Actions
-                                    @endcanany
+                                    @endif
                                 </th>
                             </tr>
                         </thead>

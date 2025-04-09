@@ -22,7 +22,12 @@
                                 <th>Email</th>
                                 <th>Phone</th>
                                 <th>Message</th>
-                                <th>Actions</th>
+                                {{-- <th>Actions</th> --}}
+                                <th scope="col">
+                                    @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.contacts.destroy'))
+                                        Actions
+                                    @endif
+                                </th>
                             </tr>
                         </thead>
                         <tbody>

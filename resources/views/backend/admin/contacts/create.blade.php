@@ -25,10 +25,11 @@
                                 <th scope="col">Image</th>
                                 <th scope="col">Sort by</th>
                                 {{-- <th scope="col">Actions</th> --}}
+                            
                                 <th scope="col">
-                                    @canany(['backend.admin.contacts.edit', 'backend.admin.contacts.delete'])
+                                    @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.contacts.edit') || auth()->user()->roles->first()->hasPermissionTo('backend.admin.contacts.delete'))
                                         Actions
-                                    @endcanany
+                                    @endif
                                 </th>
                             </tr>
                         </thead>

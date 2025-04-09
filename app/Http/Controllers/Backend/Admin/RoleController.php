@@ -19,7 +19,7 @@ class RoleController extends Controller
                 })
                 ->addColumn('actions', function ($role) {
                     return '
-                        <button class="btn btn-primary editRole btn-sm" data-id="'.$role->id.'">Edit</button>
+                        <button class="btn btn-info editRole btn-sm" data-id="'.$role->id.'">Edit</button>
                         <button class="btn btn-danger deleteRole btn-sm" data-id="'.$role->id.'">Delete</button>
                     ';
                 })

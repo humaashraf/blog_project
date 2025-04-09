@@ -26,10 +26,11 @@
                                 <th scope="col">Image</th>
                                 <th scope="col">Sort by</th>
                                 {{-- <th scope="col">Actions</th> --}}
+                              
                                 <th scope="col">
-                                    @canany(['backend.admin.sliders.edit', 'backend.admin.sliders.delete'])
+                                    @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.sliders.edit') || auth()->user()->roles->first()->hasPermissionTo('backend.admin.sliders.delete'))
                                         Actions
-                                    @endcanany
+                                    @endif
                                 </th>
                             </tr>
                         </thead>

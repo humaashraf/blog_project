@@ -26,10 +26,11 @@
                                 <th scope="col">#</th>
                                 <th scope="col">Name</th>
                                 {{-- <th scope="col">Actions</th> --}}
+                               
                                 <th scope="col">
-                                    @canany(['backend.admin.tags.edit', 'backend.admin.tags.delete'])
+                                    @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.tags.edit') || auth()->user()->roles->first()->hasPermissionTo('backend.admin.tags.delete'))
                                         Actions
-                                    @endcanany
+                                    @endif
                                 </th>
                             </tr>
                         </thead>

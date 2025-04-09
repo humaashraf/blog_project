@@ -31,15 +31,12 @@
                                 <th scope="col">Tags</th>
                                 <th scope="col">Author Name</th>
                                 {{-- <th scope="col">Actions</th> --}}
-                                {{-- <th scope="col">
-                                    @canany(['backend.admin.posts.edit', 'backend.admin.posts.delete', 'backend.admin.post.show'])
-                                        Actions
-                                    @endcanany
-                                </th> --}}
+
+
                                 <th scope="col">
-                                    @canany(['backend.admin.posts.edit', 'backend.admin.posts.delete', 'backend.admin.post.show'])
+                                    @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.posts.edit') || auth()->user()->roles->first()->hasPermissionTo('backend.admin.posts.delete') || auth()->user()->roles->first()->hasPermissionTo('backend.admin.post.show'))
                                         Actions
-                                    @endcanany
+                                    @endif
                                 </th>
 
                             </tr>
