@@ -13,18 +13,37 @@ class PendingCommentController extends Controller
     public function index(Request $request)
 {
     if ($request->ajax()) {
+        $role = auth()->user()->roles()->first(); // Get the user's role
         $comments = Comment::with('post')->select('comments.*')->where('is_approved', 0)->whereNull('published_at');
         return DataTables::of($comments)
             ->addColumn('post_title', function ($comment) {
                 return $comment->post ? $comment->post->title : 'N/A';
             })
-            ->addColumn('action', function ($comment) {
-                return '<a href="javascript:void(0)" class="btn-sm btn btn-success approveButton" data-id="' . $comment->id . '">Approve</a>
-                <button class="btn-sm btn btn-danger deleteBtn" data-id="'.$comment->id.'">Delete</button>';
-            })
-            ->rawColumns(['action'])
-            ->make(true);
-    }
+    //         ->addColumn('action', function ($comment) {
+    //             return '<a href="javascript:void(0)" class="btn-sm btn btn-success approveButton" data-id="' . $comment->id . '">Approve</a>
+    //             <button class="btn-sm btn btn-danger deleteBtn" data-id="'.$comment->id.'">Delete</button>';
+    //         })
+    //         ->rawColumns(['action'])
+    //         ->make(true);
+    // }
+    ->addColumn('action', function ($comment) use ($role) {
+        $buttons = '';
+
+        if (auth()->check()) {
+            if ($role->hasPermissionTo('backend.admin.comments.approve')) {
+                $buttons .= '<a href="javascript:void(0)" class="btn-sm btn btn-success approveButton" data-id="' . $comment->id . '">Approve</a> ';
+            }
+
+            if ($role->hasPermissionTo('backend.admin.comments.destroy')) {
+                $buttons .= '<button class="btn-sm btn btn-danger deleteBtn" data-id="' . $comment->id . '">Delete</button>';
+            }
+        }
+
+        return $buttons;
+    })
+    ->rawColumns(['action'])
+    ->make(true);
+}
 
     return view('backend.admin.comments.index');
 }

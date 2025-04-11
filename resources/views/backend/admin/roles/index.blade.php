@@ -11,7 +11,10 @@
                     <div class="row">
                         <div class="col">Manage Roles</div>
                         <div class="col " >
-                            <a class="btn btn-info mb-3" data-bs-toggle="modal" style="float: right;" data-bs-target="#exampleModal" id="addRoleBtn">Add Role</a>
+                            @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.roles.store'))
+                                <a class="btn btn-info mb-3" data-bs-toggle="modal" style="float: right;" data-bs-target="#exampleModal" id="addRoleBtn">Add Role</a>
+                            @endif
+                            {{-- <a class="btn btn-info mb-3" data-bs-toggle="modal" style="float: right;" data-bs-target="#exampleModal" id="addRoleBtn">Add Role</a> --}}
                         </div>
                     </div>
                 </div>
@@ -22,7 +25,12 @@
                                 <th scope="col">#</th>
                                 <th>Name</th>
                                 <th>Permissions</th>
-                                <th>Actions</th>
+                                {{-- <th>Actions</th> --}}
+                                <th scope="col">
+                                    @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.roles.edit') || auth()->user()->roles->first()->hasPermissionTo('backend.admin.roles.delete'))
+                                        Actions
+                                    @endif
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -32,57 +40,6 @@
             </div>
         </div>
     </div>
-{{-- <div class="container">
-    <h2>Roles Management</h2>
-    <button class="btn btn-success" id="addRoleBtn">Add Role</button>
-
-    <table id="rolesTable" class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Permissions</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-    </table>
-</div> --}}
-
-<!-- Add/Edit Modal -->
-{{-- <div class="modal fade" id="roleModal" tabindex="-1" aria-labelledby="roleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="roleModalLabel">Manage Role</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="roleForm">
-                    @csrf
-                    <input type="hidden" id="roleId">
-
-                    <div class="form-group">
-                        <label for="roleName">Role Name</label>
-                        <input type="text" id="roleName" class="form-control">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Permissions</label><br>
-                        @foreach($permissions as $permission)
-                            <div class="form-check">
-                                <input type="checkbox" name="permissions[]" value="{{ $permission->id }}" class="form-check-input permissionCheckbox">
-                                <label class="form-check-label">{{ $permission->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" id="saveRole">Save</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div> --}}
 
 <div class="modal fade ajax-modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
 aria-hidden="true">
@@ -167,32 +124,7 @@ $('#addRoleBtn').click(function () {
     $('.permissionCheckbox').prop('checked', false); // Uncheck all permissions
     $('#exampleModal').modal('show'); // Show modal
 });
-// // Submit update and add Role data
-// $('#ajaxForm').submit(function (e) {
-//     e.preventDefault();
-//     let id = $('#roleId').val();
-//     let url = id ? "{{ url('admin/roles/update') }}/" + id : "{{ route('backend.admin.roles.store') }}";
 
-//     $.ajax({
-//         url: url,
-//         method: "POST",
-//         data: {
-//             _token: "{{ csrf_token() }}",
-//             name: $('#roleName').val(),
-//             permissions: $('.permissionCheckbox:checked').map(function () {
-//                 return $(this).val();
-//             }).get()
-//         },
-//         success: function (response) {
-//             $('#exampleModal').modal('hide');
-//             $('#ajaxForm')[0].reset(); // Reset form after submission
-//             table.ajax.reload();
-//         },
-//         error: function (xhr) {
-//             console.log(xhr.responseText); // Debugging
-//         }
-//     });
-// });
 // Submit update and add Role data
 $('#ajaxForm').submit(function (e) {
     e.preventDefault();
@@ -246,42 +178,6 @@ $('#ajaxForm').submit(function (e) {
 });
 
 
-
-
-    // $('#roleForm').submit(function (e) {
-    //     e.preventDefault();
-    //     let id = $('#roleId').val();
-    //     let url = id ? "{{ url('admin/roles/update') }}/" + id : "{{ route('backend.admin.roles.store') }}";
-
-    //     $.ajax({
-    //         url: url,
-    //         method: "POST",
-    //         data: {
-    //             _token: "{{ csrf_token() }}",
-    //             name: $('#roleName').val(),
-    //             permissions: $('.permissionCheckbox:checked').map(function () {
-    //                 return $(this).val();
-    //             }).get()
-    //         },
-    //         success: function (response) {
-    //             $('#roleModal').modal('hide');
-    //             table.ajax.reload();
-    //         }
-    //     });
-    // });
-
-    // $(document).on('click', '.editRole', function () {
-    //     let id = $(this).data('id');
-    //     $.get("{{ url('admin/roles/edit') }}/" + id, function (data) {
-    //         $('#roleId').val(data.id);
-    //         $('#roleName').val(data.name);
-    //         $('.permissionCheckbox').prop('checked', false);
-    //         $.each(data.permissions, function (index, permission) {
-    //             $('.permissionCheckbox[value="' + permission.id + '"]').prop('checked', true);
-    //         });
-    //         $('#roleModal').modal('show');
-    //     });
-    // });
     $(document).on('click', '.editRole', function () {
     let id = $(this).data('id');
     $.get("{{ url('admin/roles/edit') }}/" + id, function (data) {

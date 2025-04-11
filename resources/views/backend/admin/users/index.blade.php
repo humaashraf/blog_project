@@ -11,7 +11,10 @@
                 <div class="row">
                     <div class="col">Users</div>
                     <div class="col">
+                        @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.users.store'))
                         <a class="btn btn-info mb-3" data-bs-toggle="modal" style="float: right;" data-bs-target="#exampleModal" id="users">Add new Users</a>
+                        @endif
+                        {{-- <a class="btn btn-info mb-3" data-bs-toggle="modal" style="float: right;" data-bs-target="#exampleModal" id="users">Add new Users</a> --}}
                     </div>
                 </div>
             </div>
@@ -24,7 +27,12 @@
                             <th>Email</th>
                             <th>Type</th>
                             <th>Admin Role</th>
-                            <th>Actions</th>
+                            {{-- <th>Actions</th> --}}
+                            <th scope="col">
+                                @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.users.edit') || auth()->user()->roles->first()->hasPermissionTo('backend.admin.users.delete'))
+                                    Actions
+                                @endif
+                            </th>
                         </tr>
                     </thead>
                     <tbody>

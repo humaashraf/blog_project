@@ -12,6 +12,7 @@ class UsersController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
+            $role = auth()->user()->roles()->first();
             // $data = User::with('roles')->get();
             $data = User::whereDoesntHave('roles', function ($query) {
                 $query->whereIn('name', ['author']);
@@ -24,13 +25,31 @@ class UsersController extends Controller
                 ->addColumn('type', function ($row) {
                     return ucfirst($row->type); // Show type (Admin/User)
                 })
-                ->addColumn('action', function ($row) {
-                    return '<a data-href="'.$row->id.'" class="btn-sm btn btn-info editButton">Edit</a>
-                            <a data-href="'.$row->id.'" class="btn-sm btn btn-danger delButton">Delete</a>';
-                })
-                ->rawColumns(['action'])
-                ->make(true);
-        }
+        //         ->addColumn('action', function ($row) {
+        //             return '<a data-href="'.$row->id.'" class="btn-sm btn btn-info editButton">Edit</a>
+        //                     <a data-href="'.$row->id.'" class="btn-sm btn btn-danger delButton">Delete</a>';
+        //         })
+        //         ->rawColumns(['action'])
+        //         ->make(true);
+        // }
+        ->addColumn('action', function ($row) use ($role) {
+            $buttons = '';
+
+            if (auth()->check()) {
+                if ($role->hasPermissionTo('backend.admin.users.edit')) {
+                    $buttons .= '<a data-href="' . $row->id . '" class="btn-sm btn btn-info editButton">Edit</a> ';
+                }
+
+                if ($role->hasPermissionTo('backend.admin.users.delete')) {
+                    $buttons .= '<a data-href="' . $row->id . '" class="btn-sm btn btn-danger delButton">Delete</a>';
+                }
+            }
+
+            return $buttons;
+        })
+        ->rawColumns(['action'])
+        ->make(true);
+}
 
         $roles = Role::pluck('name', 'id');
         return view('backend.admin.users.index', compact('roles'));

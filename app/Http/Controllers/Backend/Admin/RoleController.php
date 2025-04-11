@@ -12,20 +12,39 @@ class RoleController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
+            $role = auth()->user()->roles()->first();
             $roles = Role::with('permissions')->get();
             return DataTables::of($roles)
                 ->addColumn('permissions', function ($role) {
                     return implode(', ', $role->permissions->pluck('name')->toArray());
                 })
-                ->addColumn('actions', function ($role) {
-                    return '
-                        <button class="btn btn-info editRole btn-sm" data-id="'.$role->id.'">Edit</button>
-                        <button class="btn btn-danger deleteRole btn-sm" data-id="'.$role->id.'">Delete</button>
-                    ';
-                })
-                ->rawColumns(['actions'])
-                ->make(true);
-        }
+        //         ->addColumn('actions', function ($role) {
+        //             return '
+        //                 <button class="btn btn-info editRole btn-sm" data-id="'.$role->id.'">Edit</button>
+        //                 <button class="btn btn-danger deleteRole btn-sm" data-id="'.$role->id.'">Delete</button>
+        //             ';
+        //         })
+        //         ->rawColumns(['actions'])
+        //         ->make(true);
+        // }
+        ->addColumn('actions', function ($roleItem) use ($role) {
+            $buttons = '';
+
+            if (auth()->check()) {
+                if ($role->hasPermissionTo('backend.admin.roles.edit')) {
+                    $buttons .= '<button class="btn btn-info editRole btn-sm" data-id="' . $roleItem->id . '">Edit</button> ';
+                }
+
+                if ($role->hasPermissionTo('backend.admin.roles.delete')) {
+                    $buttons .= '<button class="btn btn-danger deleteRole btn-sm" data-id="' . $roleItem->id . '">Delete</button>';
+                }
+            }
+
+            return $buttons;
+        })
+        ->rawColumns(['actions'])
+        ->make(true);
+}
 
         $permissions = Permission::all();
         return view('backend.admin.roles.index', compact('permissions'));

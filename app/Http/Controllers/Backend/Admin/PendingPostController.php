@@ -39,12 +39,7 @@ class PendingPostController extends Controller
                 ->addColumn('tags', fn($row) => $row->tags->pluck('name')->implode(', ') ?? 'No Tags')
                 ->addColumn('author', fn($row) => $row->author->name ?? 'No Author') // Show author name
                 ->addColumn('image', fn($row) => $row->image ? '<img src="' . asset('uploads/' . $row->image) . '" width="50">' : 'No Image')
-        //         ->addColumn('action', fn($row) => '<a href="javascript:void(0)" class="btn-sm btn btn-danger denyButton" data-id="' . $row->id . '">Deny</a>
-        //         <a href="javascript:void(0)" class="btn-sm btn btn-success approveButton" data-id="' . $row->id . '">Approve</a>
-        //         <button class="btn btn-danger btn-sm deleteBtn" data-id="'.$row->id.'">Delete</button>')
-        //         ->rawColumns(['image', 'action'])
-        //         ->make(true);
-        // }
+       
         ->addColumn('action', function ($row) use ($role) {
             $buttons = '';
 

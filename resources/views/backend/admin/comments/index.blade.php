@@ -21,7 +21,12 @@
                                 <th>Post Title</th>
                                 <th>Comment</th>
                                 {{-- <th>Published At</th> --}}
-                                <th>Actions</th>
+                                {{-- <th>Actions</th> --}}
+                                <th scope="col">
+                                    @if (auth()->user()->roles->first()->hasPermissionTo('backend.admin.comments.approve') || auth()->user()->roles->first()->hasPermissionTo('backend.admin.comments.destroy'))
+                                        Actions
+                                    @endif
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
